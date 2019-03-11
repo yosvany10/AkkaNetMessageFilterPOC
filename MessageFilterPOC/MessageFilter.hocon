@@ -1,0 +1,32 @@
+﻿akka {
+	actor {
+		provider = cluster
+		
+		deployment {
+			/bucket {
+				router = consistent-hashing-pool
+				#routees.paths = ["/user/myrouter"]
+				nr-of-instances = 10 # max number of total routees
+				cluster {
+					enabled = on
+					allow-local-routees = on
+					use-role = bucket
+					max-nr-of-instances-per-node = 1
+				}
+			}
+
+		}
+	}
+
+	remote {
+			dot-netty.tcp {
+				port = 6969
+				hostname = localhost
+			}
+	}
+
+	cluster {
+		seed-nodes = ["akka.tcp://MessageFilterSystem@localhost:6969"]
+		roles = ["myRouter"]
+	}
+}

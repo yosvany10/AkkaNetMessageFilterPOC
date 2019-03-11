@@ -1,0 +1,20 @@
+﻿akka {
+	actor {
+		provider = cluster
+
+		
+
+	}
+
+	remote {
+			dot-netty.tcp {
+				port = 0
+				hostname = localhost
+			}
+	}
+
+	cluster {
+		seed-nodes = ["akka.tcp://MessageFilterSystem@localhost:6969"]
+		roles = ["bucket"]
+	}
+}
