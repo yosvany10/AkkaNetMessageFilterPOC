@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Shared.Messages
 {
-    public class Accepted
+    public class IAmInUseMessage
     {
     }
 }

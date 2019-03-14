@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Akka.Actor;
 using Akka.Configuration;
@@ -14,18 +15,28 @@ namespace MessageFilterPOC
         {
 			var config = ConfigurationFactory.ParseString(File.ReadAllText("MessageFilter.hocon"));
 			var system = ActorSystem.Create("MessageFilterSystem", config);
+			IActorRef BucketCeo = system.ActorOf(Props.Create<MessageBucketCEOActor>(), "BucketCEO");
 
-			IActorRef bucketRef = system.ActorOf(Props.Create<MessageBucketActor>().WithRouter(FromConfig.Instance), "bucket");
+			List<string> randoms = new List<string>();
+			
 
-			string input;
-
-			while (true)
+			for (int i =0; i < 100; i++)
 			{
-				input = Console.ReadLine();
-				bucketRef.Tell(new StringMessage(input));
+				Random r = new Random();
+				int rInt = r.Next(0, 3);
+				randoms.Add(rInt.ToString());
+			}
+
+			Console.ReadLine();
+			for (int i = 0; i < randoms.Count; i++)
+			{
+				
+				BucketCeo.Tell(new StringMessage(randoms[i]));
 			}
 
 
+			Console.ReadLine();
+			system.Terminate();
 			system.WhenTerminated.Wait();
         }
     }

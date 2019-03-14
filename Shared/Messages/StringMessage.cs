@@ -5,15 +5,18 @@ using System.Text;
 
 namespace Shared.Messages
 {
-	public class StringMessage :IConsistentHashable
+	public class StringMessage
     {
 		public string MyMessage { get; private set; }
-
-		object IConsistentHashable.ConsistentHashKey => MyMessage.Split()[0];
 
 		public StringMessage(string myMessage)
 		{
 			this.MyMessage = myMessage;
+		}
+
+		public override string ToString()
+		{
+			return MyMessage;
 		}
 	}
 }

@@ -3,10 +3,9 @@
 		provider = cluster
 		
 		deployment {
-			/bucket {
-				router = consistent-hashing-pool
-				#routees.paths = ["/user/myrouter"]
-				nr-of-instances = 10 # max number of total routees
+			/BucketCEO/bucket {
+				router = round-robin-pool
+				nr-of-instances = 500 # max number of total routees
 				cluster {
 					enabled = on
 					allow-local-routees = on
