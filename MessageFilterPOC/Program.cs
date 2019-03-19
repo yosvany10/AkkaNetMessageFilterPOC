@@ -32,7 +32,9 @@ namespace MessageFilterPOC
 			{
 				Random r = new Random();
 				int rInt = r.Next(0, 3);
-				randoms.Add(rInt.ToString());
+				int r1Int = r.Next(0, 3);
+				int r2Int = r.Next(0, 3);
+				randoms.Add(string.Format("{0} {1} {2}", rInt.ToString(), r1Int.ToString(), r2Int.ToString()));
 			}
 
 			Console.ReadLine();
