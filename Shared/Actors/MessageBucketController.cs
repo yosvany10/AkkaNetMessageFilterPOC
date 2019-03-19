@@ -14,30 +14,13 @@ namespace Shared.Actors
 		{
 			myMessages = new List<StringMessage>();
 
-			Become(AcceptingNew);
+			Receive<StringMessage>(message => HandleStringMessage(message));
 		}
 
-		private void AcceptingNew()
+		private void HandleStringMessage(StringMessage message)
 		{
-			Receive<CheckAvailable>(message => {
-				Become(NotAcceptingNew);
-				Sender.Tell(new AmAvailable(message.Key));
-			});
-		}
-
-		private void NotAcceptingNew()
-		{
-
-			Receive<CheckAvailable>(message => {
-				//Console.WriteLine("I am in use");
-				Sender.Tell(new IAmInUseMessage());
-			});
-
-			Receive<StringMessage>(message => {
-				Console.WriteLine(message);
-				myMessages.Add(message);
-			});
-
+			Console.WriteLine(message);
+			myMessages.Add(message);
 		}
 
 		protected override void PreStart()

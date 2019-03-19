@@ -4,6 +4,7 @@ using Akka.Configuration;
 using System.IO;
 using Shared.Actors;
 using Shared.Messages;
+using Akka.Cluster.Sharding;
 
 namespace EmptyActorSystem
 {
@@ -13,7 +14,14 @@ namespace EmptyActorSystem
 		{
 			var config = ConfigurationFactory.ParseString(File.ReadAllText("EmptyServer.hocon"));
 			var system = ActorSystem.Create("MessageFilterSystem", config);
-			
+			var shardRegion = ClusterSharding.Get(system).Start(
+					typeName: "bucket",
+					entityProps: Props.Create<MessageBucketController>(),
+					settings: ClusterShardingSettings.Create(system),
+					messageExtractor: new ShardStringMessageExtractor()
+				);
+
+
 			system.WhenTerminated.Wait();
 		}
     }

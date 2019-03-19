@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Akka.Actor;
+using Akka.Cluster.Sharding;
 using Akka.Configuration;
 using Akka.Routing;
 using Shared.Actors;
@@ -15,7 +16,14 @@ namespace MessageFilterPOC
         {
 			var config = ConfigurationFactory.ParseString(File.ReadAllText("MessageFilter.hocon"));
 			var system = ActorSystem.Create("MessageFilterSystem", config);
-			IActorRef BucketCeo = system.ActorOf(Props.Create<MessageBucketCEOActor>(), "BucketCEO");
+
+			var shardRegion = ClusterSharding.Get(system).Start(
+					typeName: "bucket",
+					entityProps: Props.Create<MessageBucketController>(),
+					settings: ClusterShardingSettings.Create(system),
+					messageExtractor: new ShardStringMessageExtractor()
+				);
+			IActorRef BucketCeo = system.ActorOf(Props.Create<MessageBucketCEOActor>(shardRegion), "BucketCEO");
 
 			List<string> randoms = new List<string>();
 			

@@ -2,19 +2,6 @@
 	actor {
 		provider = cluster
 		
-		deployment {
-			/BucketCEO/bucket {
-				router = round-robin-pool
-				nr-of-instances = 500 # max number of total routees
-				cluster {
-					enabled = on
-					allow-local-routees = on
-					use-role = bucket
-					max-nr-of-instances-per-node = 1
-				}
-			}
-
-		}
 	}
 
 	remote {
@@ -26,6 +13,6 @@
 
 	cluster {
 		seed-nodes = ["akka.tcp://MessageFilterSystem@localhost:6969"]
-		roles = ["myRouter"]
+		roles = ["bucket"]
 	}
 }

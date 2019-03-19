@@ -7,70 +7,19 @@ using System.Text;
 
 namespace Shared.Actors
 {
-    public class MessageBucketCEOActor: ReceiveActor, IWithUnboundedStash
+    public class MessageBucketCEOActor: ReceiveActor
     {
-		private IActorRef myRouter;
-		public IStash Stash { get; set; }
-		private bool ItemStashed = false;
-		Dictionary<string, IActorRef> actorRefs;
+		private IActorRef MyShard;
 
-		public MessageBucketCEOActor()
+		public MessageBucketCEOActor(IActorRef PassedInShard)
 		{
-			actorRefs = new Dictionary<string, IActorRef>();
-			myRouter = Context.ActorOf(Props.Create<MessageBucketController>().WithRouter(FromConfig.Instance), "bucket");
-			Become(Accepting);
+			MyShard = PassedInShard;
+			Receive<StringMessage>(message => HandleStringMessage(message));
 		}
 
-		private void Accepting()
+		private void HandleStringMessage(StringMessage message)
 		{
-			Receive<StringMessage>(message => AcceptStringMessage(message));
-		}
-
-		private void AcceptStringMessage(StringMessage message)
-		{
-			string key = parseKey(message);
-			if (!actorRefs.ContainsKey(key))
-			{
-				myRouter.Tell(new CheckAvailable(key));
-				Become(WaitingForResponse);
-				Stash.Stash();
-				ItemStashed = true;
-			} else
-			{
-				actorRefs[key].Tell(message);
-			}
-
-		}
-
-		private void WaitingForResponse()
-		{
-			var startTime = DateTime.Now;
-			var timeSpan = TimeSpan.FromSeconds(5);
-			Receive<AmAvailable>(message =>
-			{
-				Become(Accepting);
-				actorRefs[message.Key] = Sender;
-				if (ItemStashed)
-				{
-					Stash.UnstashAll();
-					ItemStashed = false;
-				}
-			});
-
-			Receive<IAmInUseMessage>(message =>
-			{
-				Become(Accepting);
-				if (ItemStashed)
-				{
-					Stash.UnstashAll();
-					ItemStashed = false;
-				}
-			});
-
-			Receive<StringMessage>(message => {
-				Stash.Stash();
-				ItemStashed = true;
-			});
+			MyShard.Tell(new StringMessageShardEnvelope(parseKey(message), message));
 		}
 
 		private string parseKey(StringMessage message)
