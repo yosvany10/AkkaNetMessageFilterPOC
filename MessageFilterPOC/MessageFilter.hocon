@@ -11,8 +11,36 @@
 			}
 	}
 
+	persistence {
+			journal {
+				plugin = "akka.persistence.journal.postgresql"
+				postgresql {
+					class = "Akka.Persistence.PostgreSql.Journal.PostgreSqlJournal, Akka.Persistence.PostgreSql"
+					plugin-dispatcher = "akka.actor.default-dispatcher"
+					auto-initialize = on
+					connection-string = "User ID=postgres;Password=password;Host=localhost;Port=5432;Database=akka_poc_persist;"
+				}
+		
+			}
+
+			snapshot-store {
+				plugin = "akka.persistence.snapshot-store.postgresql"
+				postgresql {
+					class = "Akka.Persistence.PostgreSql.Snapshot.PostgreSqlSnapshotStore, Akka.Persistence.PostgreSql"
+					plugin-dispatcher = "akka.actor.default-dispatcher"
+					auto-initialize = on
+					connection-string = "User ID=postgres;Password=password;Host=localhost;Port=5432;Database=akka_poc_persist;"
+				}
+			}
+	}
+
 	cluster {
+		auto-down-unreachable-after = 5s
 		seed-nodes = ["akka.tcp://MessageFilterSystem@localhost:6969"]
 		roles = ["bucket"]
+		sharding {
+			remember-entities = true
+			least-shard-allocation-strategy.rebalance-threshold = 3
+		}
 	}
 }

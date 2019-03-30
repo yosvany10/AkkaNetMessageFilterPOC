@@ -26,14 +26,14 @@ namespace MessageFilterPOC
 			IActorRef BucketCeo = system.ActorOf(Props.Create<MessageBucketCEOActor>(shardRegion), "BucketCEO");
 
 			List<string> randoms = new List<string>();
-			
+			List<string> randoms2 = new List<string>();
 
 			for (int i =0; i < 100; i++)
 			{
 				Random r = new Random();
-				int rInt = r.Next(0, 3);
-				int r1Int = r.Next(0, 3);
-				int r2Int = r.Next(0, 3);
+				int rInt = r.Next(0, 9);
+				int r1Int = r.Next(0, 9);
+				int r2Int = r.Next(0, 9);
 				randoms.Add(string.Format("{0} {1} {2}", rInt.ToString(), r1Int.ToString(), r2Int.ToString()));
 			}
 
@@ -44,7 +44,20 @@ namespace MessageFilterPOC
 				BucketCeo.Tell(new StringMessage(randoms[i]));
 			}
 
+			for (int i = 0; i < 100; i++)
+			{
+				Random r = new Random();
+				int rInt = r.Next(10, 13);
+				int r1Int = r.Next(10, 13);
+				int r2Int = r.Next(10, 13);
+				randoms2.Add(string.Format("{0} {1} {2}", rInt.ToString(), r1Int.ToString(), r2Int.ToString()));
+			}
+			Console.ReadLine();
+			for (int i = 0; i < randoms2.Count; i++)
+			{
 
+				BucketCeo.Tell(new StringMessage(randoms2[i]));
+			}
 			Console.ReadLine();
 			system.Terminate();
 			system.WhenTerminated.Wait();
